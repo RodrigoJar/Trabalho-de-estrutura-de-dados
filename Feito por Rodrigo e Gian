@@ -1,0 +1,169 @@
+Codigo do Trabalho
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 100
+#define MAX_STR 100
+
+typedef struct {
+    int prioridade;
+    char nome[MAX_STR];
+    char descricao[MAX_STR];
+} Tarefa;
+
+typedef struct {
+    Tarefa heap[MAX];
+    int tamanho;
+} FilaPrioridade;
+
+void trocar(Tarefa *a, Tarefa *b) {
+    Tarefa temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void subir(FilaPrioridade *fila, int i) {
+    while (i > 0) {
+        int pai = (i - 1) / 2;
+        if (fila->heap[i].prioridade < fila->heap[pai].prioridade) {
+            trocar(&fila->heap[i], &fila->heap[pai]);
+            i = pai;
+        } else {
+            break;
+        }
+    }
+}
+
+void descer(FilaPrioridade *fila, int i) {
+    int menor = i;
+    int esq = 2 * i + 1;
+    int dir = 2 * i + 2;
+
+    if (esq < fila->tamanho && fila->heap[esq].prioridade < fila->heap[menor].prioridade)
+        menor = esq;
+    if (dir < fila->tamanho && fila->heap[dir].prioridade < fila->heap[menor].prioridade)
+        menor = dir;
+
+    if (menor != i) {
+        trocar(&fila->heap[i], &fila->heap[menor]);
+        descer(fila, menor);
+    }
+}
+
+void adicionar_tarefa(FilaPrioridade *fila) {
+    if (fila->tamanho >= MAX) {
+        printf("Fila cheia.\n");
+        return;
+    }
+
+    Tarefa nova;
+    printf("Nome da tarefa: ");
+    getchar(); // Limpar buffer
+    fgets(nova.nome, MAX_STR, stdin);
+    nova.nome[strcspn(nova.nome, "\n")] = 0;
+
+    printf("Descrição: ");
+    fgets(nova.descricao, MAX_STR, stdin);
+    nova.descricao[strcspn(nova.descricao, "\n")] = 0;
+
+    printf("Prioridade (1 - Alta, 2 - Média, 3 - Baixa): ");
+    scanf("%d", &nova.prioridade);
+
+    fila->heap[fila->tamanho] = nova;
+    subir(fila, fila->tamanho);
+    fila->tamanho++;
+
+    printf("Tarefa adicionada com sucesso!\n");
+}
+
+void remover_tarefa(FilaPrioridade *fila) {
+    if (fila->tamanho == 0) {
+        printf("Nenhuma tarefa para remover.\n");
+        return;
+    }
+
+    Tarefa removida = fila->heap[0];
+    fila->heap[0] = fila->heap[fila->tamanho - 1];
+    fila->tamanho--;
+    descer(fila, 0);
+
+    printf("Tarefa removida: [%d] %s - %s\n", removida.prioridade, removida.nome, removida.descricao);
+}
+
+void listar_tarefas(FilaPrioridade fila) {
+    if (fila.tamanho == 0) {
+        printf("Nenhuma tarefa na fila.\n");
+        return;
+    }
+
+    printf("Tarefas na fila:\n");
+    for (int i = 0; i < fila.tamanho; i++) {
+        char *prioridade_str = fila.heap[i].prioridade == 1 ? "Alta" :
+                               fila.heap[i].prioridade == 2 ? "Média" : "Baixa";
+        printf("[%s] %s: %s\n", prioridade_str, fila.heap[i].nome, fila.heap[i].descricao);
+    }
+}
+
+void buscar_tarefa(FilaPrioridade *fila) {
+    char busca[MAX_STR];
+    getchar(); // limpar buffer
+    printf("Digite o nome da tarefa: ");
+    fgets(busca, MAX_STR, stdin);
+    busca[strcspn(busca, "\n")] = 0;
+
+    int encontrada = 0;
+    for (int i = 0; i < fila->tamanho; i++) {
+        if (strcmp(fila->heap[i].nome, busca) == 0) {
+            encontrada = 1;
+            printf("Tarefa encontrada: [%d] %s - %s\n", fila->heap[i].prioridade, fila->heap[i].nome, fila->heap[i].descricao);
+        }
+    }
+
+    if (!encontrada) {
+        printf("Tarefa não encontrada.\n");
+    }
+}
+
+void menu() {
+    FilaPrioridade fila;
+    fila.tamanho = 0;
+
+    int opcao;
+    do {
+        printf("\n--- Gerenciador de Tarefas ---\n");
+        printf("1. Adicionar tarefa\n");
+        printf("2. Remover tarefa mais prioritária\n");
+        printf("3. Listar tarefas\n");
+        printf("4. Buscar tarefa por nome\n");
+        printf("5. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1: adicionar_tarefa(&fila); break;
+            case 2: remover_tarefa(&fila); break;
+            case 3: listar_tarefas(fila); break;
+            case 4: buscar_tarefa(&fila); break;
+            case 5: printf("Saindo...\n"); break;
+            default: printf("Opção inválida.\n");
+        }
+    } while (opcao != 5);
+}
+
+int main() {
+    menu();
+    return 0;
+}
+
+
+
+--------------------------------
+Ingredientes (20 porções)
+1 xícara de leite.
+1 colher de sopa de fermento em pó
+3 xícaras de farinha de trigo.
+3 xícaras de açúcar.
+3 ovos.
+4 colheres de manteiga
