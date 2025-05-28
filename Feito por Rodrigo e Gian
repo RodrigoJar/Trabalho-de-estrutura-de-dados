@@ -101,7 +101,8 @@ void listar_tarefas(FilaPrioridade fila) {
     printf("Tarefas na fila:\n");
     for (int i = 0; i < fila.tamanho; i++) {
         char *prioridade_str = fila.heap[i].prioridade == 1 ? "Alta" :
-                               fila.heap[i].prioridade == 2 ? "Média" : "Baixa";
+                               fila.heap[i].prioridade == 2 ? "Média" :
+                               fila.heap[i].prioridade == 3 ? "Baixa":
         printf("[%s] %s: %s\n", prioridade_str, fila.heap[i].nome, fila.heap[i].descricao);
     }
 }
